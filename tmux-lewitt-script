@@ -1,0 +1,14 @@
+tmux has-session -t lws
+
+if [ $? != 0 ]
+then
+  tmux new-session -s lws -n editor -d
+  tmux send-keys -t lws:1.1 'cd ~/Dropbox/code/lewittscript' C-m
+  tmux send-keys -t lws:1.1 'serve' C-m
+
+  tmux split-window -h -t lws:1.1
+  tmux send-keys -t lws:1.2 'cd ~/Dropbox/code/lewittscript' C-m
+  tmux send-keys -t lws:1.2 'ls' C-m
+fi
+
+tmux attach -t lws
