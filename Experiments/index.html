@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>LeWittScript</title>
+
+    <link href="css/main.css" rel="stylesheet" />
+
+    <script src="modernizr.js"></script>
+    <script>
+      window.addEventListener("load", eventWindowLoaded, false);
+
+      var Debugger = function () { };
+      Debugger.log = function(message) {
+        try {
+          console.log(message);
+        } catch (exception) {
+          return;
+        }
+      };
+
+      function eventWindowLoaded() {
+        canvasApp();
+      }
+
+      function canvasSupport() {
+        return Modernizr.canvas;
+      }
+
+      function canvasApp() {
+
+        if (!canvasSupport()) {
+          return;
+        }
+
+        var theCanvas = document.getElementById("mainCanvas");
+        var context = theCanvas.getContext("2d");
+
+        Debugger.log("Drawing Canvas");
+
+        function drawCircle(context, xpos, ypos, radius, startAngle, endAngle, reverse) {
+          context.arc(xpos, ypos, radius, (Math.PI/180)*startAngle, (Math.PI/180)*endAngle, reverse);
+        }
+
+        function drawScreen() {
+          //triangle
+          // context.beginPath();
+          // context.moveTo(10,10);
+          // context.lineTo(300,10);
+          // context.lineTo(10,300);
+          // context.fill();
+
+          // context.beginPath();
+          // context.moveTo(480,30);
+          // context.lineTo(480,480);
+          // context.lineTo(30,480);
+          // context.closePath();
+          // context.stroke();
+
+          // var endAngle = 0.0;
+          // for (var x = 50; x < 500; x += 100) {
+          //   context.beginPath();
+          //   context.moveTo(x,190);
+          //   endAngle += (2 * Math.PI) / 5;
+          //   context.arc(x, 190, 50, 0, endAngle, false);
+          //   context.fill();
+          // }
+          // endAngle = 0.0;
+          // for (x = 50; x < 500; x+= 100) {
+          //   context.beginPath();
+          //   context.moveTo(x, 310);
+          //   endAngle += (2 * Math.PI) / 5;
+          //   context.arc(x, 310, 50, 0, endAngle, true);
+          //   context.fill();
+          // }
+
+
+          // var drawRoundRect = function(ctx, x, y, w, h, cr) {
+          //   context.beginPath();
+          //   context.moveTo(x + w / 2, y);
+          //   context.arcTo(x + w, y, x + w, y + h, cr);
+          //   context.arcTo(x + w, y + h, x, y + h, cr);
+          //   context.arcTo(x, y + h, x, y, cr);
+          //   context.arcTo(x, y, x + w, y, cr);
+          //   context.closePath();
+          //   context.stroke();
+          // };
+          //
+          // var cr = 0;
+          // for (x = 0; x < 500; x += 100) {
+          //   drawRoundRect(context, x + 150, context.canvas.height / 2 - 45, 90, 90, cr);
+          //   cr += Math.PI * 2;
+          // }
+          // These are no hashes in JavaScript. Instead, you just
+          // created object to do this.
+          // var colors = {};
+          // colors["blue"] =
+          // colors.blue
+          // both of the above are valid
+          var basicColors = ["black", "green", "silver", "lime", "gray", "olive",
+                        "white", "yellow", "maroon", "navy", "red", "blue",
+                        "purple", "teal", "fuchsia", "aqua"];
+
+          var pinkColors = ["pinks", "lightpink", "hotpink", "deeppink",
+                            "palevioletred", "mediumvioletred"];
+
+          var redColors = ["lightsalmon", "salmon", "darksalmon", "lightcoral",
+                           "indianred", "crimson", "firebrick", "darkred",
+                           "red"];
+
+          var orangeColors = ["orangered", "tomato", "coral", "darkorange",
+                              "orange"];
+
+          var yellowColors = ["yellow", "lightyellow", "lemonchiffon",
+                              "lightgoldenrodyellow", "papayawhip", "moccasin",
+                              "peachpuff", "palegoldenrod", "khaki",
+                              "darkkhaki", "gold"];
+
+          var brownColors = ["cornsilk", "blanchedalmond", "bisque",
+                             "navajowhite", "wheat", "burlywood", "tan",
+                             "rosybrown", "sandybrown", "goldenrod",
+                             "darkgoldernrod", "peru", "chocolate",
+                             "saddlebrown", "sienna", "brown", "maroon"];
+
+          var greenColors = ["darkolivegreen", "olive", "olivedrab",
+                             "yellowgreen", "limegreen", "lime", "lawngreen",
+                             "chartreuse", "greenyellow", "springgreen",
+                             "mediumspringgreen", "lightgreen", "palegreen",
+                             "darkseagreen", "mediumseagreen", "seagreen",
+                             "forestgreen", "green", "darkgreen"];
+
+          var cyanColors = ["mediumaquamarine", "aqua", "cyan", "lightcyan",
+                            "paleturquoise", "aquamarine", "turquoise",
+                            "mediumturquoise", "darkturquoise",
+                            "lightseagreen", "cadetblue", "darkcyan", "teal"];
+
+          var blueColors = ["lightstreetblue", "powderblue", "lightblue",
+                            "skyblue", "lightskyblue", "deepskyblue",
+                            "dodgerblue", "cornflowerblue", "steelblue",
+                            "royalblue", "blue", "mediumblue", "darkblue",
+                            "navy", "midnightblue"];
+
+          var purpleColors = ["lavender", "thistle", "plum", "violet",
+                              "orchid", "fuchsia", "magenta", "mediumorchid",
+                              "mediumpurple", "blueviolet", "darkviolet",
+                              "darkorchid", "darkmagenta", "purple", "indigo",
+                              "darkslateblue", "slateblue", "mediumslateblue"];
+
+          var whiteColors = ["white", "snow", "honeydew", "mintcream", "azure",
+                             "aliceblue", "ghostwhite", "whitesmoke",
+                             "seashell", "beige", "oldlace", "floralwhite",
+                             "ivory", "antiquewhite", "linen", "lavenderblush",
+                             "mistyrose"];
+
+          var greyBlackColors = ["gainsboro", "lightgrey", "silver", "darkgray",
+                                 "gray", "dimgray", "lightslategray",
+                                 "slategray", "darkslategray", "black"];
+
+          // for (var x = 0; x < 10; x++) {
+          //   context.beginPath();
+          //   context.strokeStyle = colors[x];
+          //   context.moveTo(10, (10 * x));
+          //   context.lineTo(780, (10 * x));
+          //   context.closePath();
+          //   context.stroke();
+          // }
+          // There are 5 lines
+          // context.beginPath();
+          // context.moveTo(10, 10);
+          // context.lineTo(300,10);
+          // context.closePath();
+          // context.stroke();
+
+          context.beginPath();
+          context.strokeStyle = greyBlackColors[6];
+          context.moveTo(150, 0);
+          context.bezierCurveTo(0,125,300,175,150,300);
+          context.bezierCurveTo(300,125,300,175,150,600);
+          // context.closePath();
+
+          context.stroke();
+
+          context.beginPath();
+          context.strokeStyle = greyBlackColors[6];
+          context.moveTo(350, 0);
+          context.bezierCurveTo(0,125,300,175,150,300);
+          context.bezierCurveTo(150,125,300,175,150,600);
+          // context.closePath();
+
+          context.stroke();
+
+          context.beginPath();
+          context.strokeStyle = greyBlackColors[6];
+          context.moveTo(550, 0);
+          context.bezierCurveTo(0,125,300,175,150,300);
+          context.bezierCurveTo(300,125,300,175,150,600);
+          // context.closePath();
+          context.stroke();
+
+context.beginPath();
+context.strokeStyle = greyBlackColors[6];
+context.moveTo(750, 0);
+context.bezierCurveTo(0,125,300,175,150,300);
+context.bezierCurveTo(500,125,300,175,150,600);
+// context.closePath();
+
+context.stroke();
+
+
+
+        }
+        drawScreen();
+      }
+    </script>
+  </head>
+  <body>
+
+    <div class="container">
+
+      <h1>LeWittScript</h1>
+
+      <div class="canvasDiv">
+        <canvas id="mainCanvas" width="800" height="450">
+          Your browser doesn't support HTML5 Canvas. Bummer.
+        </canvas>
+      </div>
+
+      <h4>Instruction:</h4>
+      <div class="instruction-display">
+        <p class="instruction-text"></p>
+      </div>
+
+
+    </div>
+
+  </body>
+</html>
