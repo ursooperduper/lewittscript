@@ -1,5 +1,41 @@
 window.addEventListener("load", eventWindowLoaded, false);
 
+var Random = function() {
+  var m_w = _.random(0, 100000000);
+  var m_z = 987654321;
+  var mask = 0xffffffff;
+
+  // Takes any integer
+  function seed(i) {
+      m_w = i;
+      m_z = 987654321;
+      return i;
+  }
+
+  // Returns number between 0 (inclusive) and 1.0 (exclusive),
+  // just like Math.random().
+  function random()
+  {
+      m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
+      m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
+      var result = ((m_z << 16) + m_w) & mask;
+      result /= 4294967296;
+      return result + 0.5;
+  }
+
+  function randInt(mv, xv) {
+    return mv + Math.floor((xv - mv) * random());
+  }
+
+  return {
+    seed: seed,
+    random: random,
+    randInt: randInt
+  };
+};
+
+var masterRand = Random();
+
 var Debugger = function () { };
 Debugger.log = function(message) {
   try {
@@ -61,12 +97,42 @@ function leWittApp() {
     return;
   }
 
+  var ConstGen = function(k) {
+    var value = k;
+
+    return function() {
+      return value;
+    };
+  };
+
+
+  var LinearGen = function(start, increment) {
+    var value = start;
+    var inc = increment;
+
+    return function() {
+      var retVal = value;
+      value += inc;
+      return retVal;
+    };
+  };
+
+  var RandomGen = function(minVal, maxVal) {
+    var mv = minVal;
+    var xv = maxVal;
+
+    return function() {
+      return masterRand.randInt(mv, xv);
+    };
+  };
+
+
   var Circle = function(config) {
       var props = {
         context : null,
-        radius : 100,
-        xPos : 0,
-        yPos : 0,
+        radius : ConstGen(100),
+        xPos : ConstGen(0),
+        yPos : ConstGen(0),
         startAngle : 0,
         endAngle : 360,
         reverse : false,
@@ -80,9 +146,9 @@ function leWittApp() {
           context.strokeWidth = 10;
           context.beginPath();
           context.arc(
-            props.xPos,
-            props.yPos,
-            props.radius,
+            props.xPos(),
+            props.yPos(),
+            props.radius(),
             (Math.PI/180)*props.startAngle,
             (Math.PI/180)*props.endAngle,
             props.reverse
@@ -254,8 +320,8 @@ function leWittApp() {
 
   var WavyLine = function(config) {
     var props = {
-      startX: 0,
-      startY: 0,
+      startX: ConstGen(0),
+      startY: ConstGen(0),
       endX: 0,
       endY: 0,
       color: "purple",
@@ -272,22 +338,40 @@ function leWittApp() {
     _.assign(props, config);
 
     function draw() {
+
+      console.log("draw()");
       context.lineWidth = props.lineWidth;
       context.strokeStyle = props.color;
       context.beginPath();
-      context.moveTo(props.startX, props.startY);
+      context.moveTo(props.startX.next(), props.startY.next());
 
-      var currX = props.startX;
-      var currY = props.startY;
-      var curveUp = props.startY - increments[props.size];
-      var curveDown = props.startY + increments[props.size];
-      var curve = curveUp;
-      //x = 0, y = 350
+      // var currX = props.startX.next();
+      // var currY = props.startY.next();
+      var index = 0;
+      var curveValues = [
+        props.startY.next() - increments[props.size],
+        props.startY.next() + increments[props.size]
+      ];
 
-      for (var x = props.startX; x < props.endX; x++ ) {
-        curve = (curve == curveDown ? curveUp : curveDown);
-        context.quadraticCurveTo(currX += increments[props.size], curve, currX += increments[props.size], props.endY);
+      var firstX = props.startX.next() + increments[props.size];
+      var secondX = firstX + increments[props.size];
 
+
+      for (var x = props.startX.next(); x < props.endX; x++ ) {
+
+        console.log("firstX: ", firstX);
+        console.log("secondX: ", secondX);
+
+        curve = curveValues[index];
+        index = 1 - index;
+        context.quadraticCurveTo(
+          firstX,
+          curve,
+          secondX,
+          props.endY
+        );
+        firstX = secondX + increments[props.size];
+        secondX = firstX + increments[props.size];
       }
       context.stroke();
     }
@@ -300,33 +384,57 @@ function leWittApp() {
 
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
+  var seed = document.getElementById("seed");
 
   Debugger.log("Drawing Canvas");
 
   function drawScreen() {
-    for (var x= 0; x < 30; x++) {
-      z = ZigzagLine({context: context, zigs: 40, startX: 0, startY: 20 * x, spacing: 20 * x, color: "purple", lineWidth: 8});
-      z.draw();
+// 43171409
+    // theSeed = masterRand.seed(_.random(1,100000000));
+    theSeed = masterRand.seed(43171409);
+    seed.innerHTML = theSeed;
+
+// document.getElementById("myspan").innerHTML="newtext";
+
+    // for (var x= 0; x < 30; x++) {
+    //   z = ZigzagLine({context: context, zigs: 40, startX: 0, startY: 20 * x, spacing: 20 * x, color: "purple", lineWidth: 8});
+    //   z.draw();
+    // }
+    //
+
+
+
+    cx = LinearGen(200, 20);
+    cy = LinearGen(250, 20);
+    cr = RandomGen(10, 400);
+
+    for (var x = 0; x < 10; x++) {
+      c = Circle({context: context, xPos: cx, yPos: cy, radius: cr, circleColor:"red"});
+      c.draw();
     }
 
-    c = Circle({context: context, xPos: 200, yPos:250, startAngle:0, endAngle:240, reverse:false, circleColor:"red"});
-    c.draw();
 
-    l = StraightLine({context: context, startX: 0, startY: 100, endX: 300, endY: 100, lineColor: "green", lineWidth: 1});
-    l.draw();
+    //
+    // l = StraightLine({context: context, startX: 0, startY: 100, endX: 300, endY: 100, lineColor: "green", lineWidth: 1});
+    // l.draw();
+    //
+    // r = Rectangle({context: context, startX: 200, startY: 200, width: 50, height: 50, color: "yellow", lineWidth: 1});
+    // r.draw();
+    //
+    // t = Triangle({context: context, startX: 300, startY: 100, width: 200, height: 300, color: "white", lineWidth: 1});
+    // t.draw();
+    //
+    // s = Spiral({context: context, radius: 0, angle: 0, startX: 400, startY: 200, lineWidth: 10, color: "brown"});
+    // s.draw();
 
-    r = Rectangle({context: context, startX: 200, startY: 200, width: 50, height: 50, color: "yellow", lineWidth: 1});
-    r.draw();
-
-    t = Triangle({context: context, startX: 300, startY: 100, width: 200, height: 300, color: "white", lineWidth: 1});
-    t.draw();
-
-    s = Spiral({context: context, radius: 0, angle: 0, startX: 400, startY: 200, lineWidth: 10, color: "brown"});
-    s.draw();
-
-    wl = WavyLine({startx: 0, startY: 300, endX: 810, endY: 300, color: "pink", lineWidth: 10, size: "small" });
-    wl.draw();
+    // x = ConstGen(0);
+    // y = ConstGen(300);
+    //
+    // wl = WavyLine({startX: x, startY: y, endX: 800, endY: 300, color: "pink", lineWidth: 10, size: "small" });
+    // wl.draw();
   }
+
+
 
   drawScreen();
 }
