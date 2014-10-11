@@ -1,41 +1,5 @@
 window.addEventListener("load", eventWindowLoaded, false);
 
-var Random = function() {
-  var m_w = _.random(0, 100000000);
-  var m_z = 987654321;
-  var mask = 0xffffffff;
-
-  // Takes any integer
-  function seed(i) {
-      m_w = i;
-      m_z = 987654321;
-      return i;
-  }
-
-  // Returns number between 0 (inclusive) and 1.0 (exclusive),
-  // just like Math.random().
-  function random()
-  {
-      m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
-      m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
-      var result = ((m_z << 16) + m_w) & mask;
-      result /= 4294967296;
-      return result + 0.5;
-  }
-
-  function randInt(mv, xv) {
-    return mv + Math.floor((xv - mv) * random());
-  }
-
-  return {
-    seed: seed,
-    random: random,
-    randInt: randInt
-  };
-};
-
-var masterRand = Random();
-
 var Debugger = function () { };
 Debugger.log = function(message) {
   try {
@@ -53,49 +17,58 @@ function canvasSupport() {
   return Modernizr.canvas;
 }
 
-
-
-var Color = {
-  properties: {
-    // pinks
-    pink: "#FFC0CB",
-    lightPink: "#FFB6C1",
-    hotPink: "#FF69B4",
-    deepPink: "#FF1493",
-    paleVioletRed: "#DB7093",
-    mediumVioletRed: "#C71585",
-    // reds
-    lightSalmon: "#FFA07A",
-    salmon: "#FA8072",
-    darkSalmon: "#E9967A",
-    lightCoral: "F08080",
-    indianRed: "#CD5C5C",
-    crimson: "#DC143C",
-    fireBrick: "#B22222",
-    darkRed: "#8B0000",
-    red: "#FF0000",
-    // oranges
-    orangeRed: "#FF4500",
-    tomato: "#FF6347",
-    coral: "#FF7F50",
-    darkOrange: "#FF8C00",
-    orange: "FFA500",
-    // yellows
-    yellow: "#FFFF00",
-    lightYellow: "#FFFFE0",
-    lemonChiffon: "#FFFACD",
-    lightGoldenRod: "#FAFAD2",
-    papayaWhip: "#FFEFD5",
-  }
-
-};
-
-
-
 function leWittApp() {
   if (!canvasSupport()) {
     return;
   }
+
+  var makeProp = function(obj, props, name) {
+    var setter = "set" + name;
+    var getter = "get" + name;
+    obj[setter] = function(v) {
+      props[name] = v;
+    };
+
+    obj[getter] = function() {
+      return props[name];
+    };
+  };
+
+  var Random = function() {
+    var m_w = _.random(0, 100000000);
+    var m_z = 987654321;
+    var mask = 0xffffffff;
+
+    // Takes any integer
+    function seed(i) {
+        m_w = i;
+        m_z = 987654321;
+        return i;
+    }
+
+    // Returns number between 0 (inclusive) and 1.0 (exclusive),
+    // just like Math.random().
+    function random()
+    {
+        m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
+        m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
+        var result = ((m_z << 16) + m_w) & mask;
+        result /= 4294967296;
+        return result + 0.5;
+    }
+
+    function randInt(mv, xv) {
+      return mv + Math.floor((xv - mv) * random());
+    }
+
+    return {
+      seed: seed,
+      random: random,
+      randInt: randInt
+    };
+  };
+
+  var masterRand = Random();
 
   var ConstGen = function(k) {
     var value = k;
@@ -104,7 +77,6 @@ function leWittApp() {
       return value;
     };
   };
-
 
   var LinearGen = function(start, increment) {
     var value = start;
@@ -126,7 +98,6 @@ function leWittApp() {
     };
   };
 
-
   var Circle = function(config) {
       var props = {
         context : null,
@@ -136,6 +107,7 @@ function leWittApp() {
         startAngle : 0,
         endAngle : 360,
         reverse : false,
+        lineWidth: 3,
         circleColor : "red"
       };
 
@@ -143,7 +115,7 @@ function leWittApp() {
 
       function draw() {
           context.strokeStyle = props.circleColor;
-          context.strokeWidth = 10;
+          context.lineWidth = props.lineWidth;
           context.beginPath();
           context.arc(
             props.xPos(),
@@ -345,8 +317,6 @@ function leWittApp() {
       context.beginPath();
       context.moveTo(props.startX.next(), props.startY.next());
 
-      // var currX = props.startX.next();
-      // var currY = props.startY.next();
       var index = 0;
       var curveValues = [
         props.startY.next() - increments[props.size],
@@ -382,59 +352,104 @@ function leWittApp() {
 
   };
 
+  var Instruction = function(config) {
+    var props = {
+      description : null,
+      what: null,
+      shape: null,
+      size: null,
+      position: null,
+      fillColor: null,
+      lineColor: null
+    };
+
+    _.assign(props, config);
+
+    var retVal = {};
+    makeProp(retVal, props, "description");
+
+    Debugger.log("Description: " + props.description);
+    Debugger.log("What: " + props.what);
+    Debugger.log("Shape: " + props.shape);
+    Debugger.log("Size: " + props.size);
+    Debugger.log("Position: " + props.position);
+    Debugger.log("fillColor: " + props.fillColor);
+    Debugger.log("lineColor: " + props.lineColor);
+
+    return retVal;
+  };
+
   var canvas = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   var seed = document.getElementById("seed");
+  var userInstruction = document.getElementById("userInstruction");
 
   Debugger.log("Drawing Canvas");
 
   function drawScreen() {
 // 43171409
-    // theSeed = masterRand.seed(_.random(1,100000000));
-    theSeed = masterRand.seed(43171409);
+    theSeed = masterRand.seed(_.random(1,100000000));
+    // theSeed = masterRand.seed(43171409);
     seed.innerHTML = theSeed;
 
-// document.getElementById("myspan").innerHTML="newtext";
 
-    // for (var x= 0; x < 30; x++) {
-    //   z = ZigzagLine({context: context, zigs: 40, startX: 0, startY: 20 * x, spacing: 20 * x, color: "purple", lineWidth: 8});
-    //   z.draw();
-    // }
-    //
+    var shapes = ["circle", "rectangle", "triangle", "spiral", "wavy line",
+                  "straight line", "zigzag line"];
+
+    var colors = ["black", "red", "blue", "yellow", "green", "orange",
+                  "white", "purple", "brown", "random"];
+
+    var sizes = ["big", "small", "medium", "huge", "random"];
+
+    var positions = ["grid", "vertical", "horizontal", "random"];
+
+    var inputOne = "There is a big red circle.".toLowerCase();
+    var inputTwo = "The background is black.".toLowerCase();
+
+    var patternOne = RegExp("(there is|there are) (a|[0-9]+) *([a-zA-Z]+)? *([a-zA-Z]+)? *([a-zA-Z]+)? *([a-zA-Z]+)? *([a-zA-Z]+)? +(" + shapes.join('|') + ")(?:.)", "i");
+
+    var resultArray = patternOne.exec(inputOne);
+    resultArray = _.compact(resultArray);
+
+    var names = ["description", "what", "number", "size", "color", "shape"];
+    var blanks = "          ";
+
+    var resultDescription = resultArray[0];
+    var resultColor;
+    var resultShape;
+    var resultSize;
+    var resultWhat;
+    var resultNum = 0;
+
+    _.each(resultArray, function(item) {
+      var color = _.indexOf(colors, item);
+      var shape = _.indexOf(shapes, item);
+      var size = _.indexOf(sizes, item);
+      if (item == "there is" || item == "there are") {
+        resultWhat = item;
+      }
+      if (item == "a" || _.isNumber(item) ) {
+        resultNum = item;
+        if (item == "a") {
+          resultNum = 1;
+        }
+      }
+      if (color != -1) {
+        resultColor = colors[color];
+      }
+      if (shape != -1) {
+        resultShape = shapes[shape];
+      }
+      if (size != -1) {
+        resultSize = sizes[size];
+      }
+    });
+
+    var ins = Instruction({description: resultDescription, what: resultWhat, shape: resultShape, size: resultSize});
 
 
 
-    cx = LinearGen(200, 20);
-    cy = LinearGen(250, 20);
-    cr = RandomGen(10, 400);
-
-    for (var x = 0; x < 10; x++) {
-      c = Circle({context: context, xPos: cx, yPos: cy, radius: cr, circleColor:"red"});
-      c.draw();
-    }
-
-
-    //
-    // l = StraightLine({context: context, startX: 0, startY: 100, endX: 300, endY: 100, lineColor: "green", lineWidth: 1});
-    // l.draw();
-    //
-    // r = Rectangle({context: context, startX: 200, startY: 200, width: 50, height: 50, color: "yellow", lineWidth: 1});
-    // r.draw();
-    //
-    // t = Triangle({context: context, startX: 300, startY: 100, width: 200, height: 300, color: "white", lineWidth: 1});
-    // t.draw();
-    //
-    // s = Spiral({context: context, radius: 0, angle: 0, startX: 400, startY: 200, lineWidth: 10, color: "brown"});
-    // s.draw();
-
-    // x = ConstGen(0);
-    // y = ConstGen(300);
-    //
-    // wl = WavyLine({startX: x, startY: y, endX: 800, endY: 300, color: "pink", lineWidth: 10, size: "small" });
-    // wl.draw();
   }
-
-
 
   drawScreen();
 }
