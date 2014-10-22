@@ -233,7 +233,7 @@ function LeWittApp(inputs) {
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-// GENERATORS
+// -- Generators ---------------------------------------------------------
   var ConstGen = function(k) {
     var value = k;
 
@@ -262,7 +262,7 @@ function LeWittApp(inputs) {
     };
   };
 
-// SHAPES
+// -- Shapes -------------------------------------------------------------
   var Circle = function(config) {
       var props = {
         color       : "grey",
@@ -316,6 +316,7 @@ function LeWittApp(inputs) {
     function draw() {
       context.fillStyle = props.color;
       context.lineWidth = props.lineWidth;
+      context.beginPath();
       // context.strokeStyle = props.color;
       context.rect(
         props.xPos,
@@ -535,7 +536,7 @@ function LeWittApp(inputs) {
     "point"         : Circle
   };
 
-// CORE
+// -- Core  ---------------------------------------------------------------------
   var BackgroundInstruction = function(config) {
     var props   = {};
     var retVal  = {};
@@ -761,12 +762,12 @@ function LeWittApp(inputs) {
             xPos   = RandomGen(0, canvas.width)();
             yPos   = RandomGen(0, canvas.height)();
 
-            pointsStore.push([xpos, ypos]);
+            pointsStore.push([xPos, yPos]);
 
             shapeConfig = {
               color   : color,
               xPos    : xPos,
-              yPos    : ypPos,
+              yPos    : yPos,
               width   : 1,
               height  : 1
             };
