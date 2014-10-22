@@ -23,7 +23,6 @@ html, body {
   height: 100%;
 }
 
-
 body {
   font: {
     family: $font-stack;
@@ -178,7 +177,6 @@ hr {
   }
 }
 
-
 .container {
   width: 800px;
   padding: 20px;
@@ -190,7 +188,6 @@ hr {
   display: block;
 }
 
-
 canvas {
   border: 1px solid #ccc;
   width: 800px;
@@ -200,12 +197,33 @@ canvas {
 .instruction-display {
   width: 780px;
   background-color: #efefef;
-  height: 100px;
   border: 1px solid #ccc;
   padding: 10px;
 }
 
 .canvasDiv {
-
   margin-bottom: $spacing-unit;
+}
+
+.instruction {
+  width: 98%;
+  font-size: 1.6em;
+  color: #333;
+  margin-bottom: $spacing-unit / 4;
+}
+
+#ins-button {
+  padding: $spacing-unit;
+  font-size: 1.4em;
+}
+
+.insButton {
+  display: block;
+  background-color: #ddd;
+  padding: $spacing-unit / 2;
+  color: #333;
+  width: 120px;
+  text-align: center;
+  font-size: 1.0em;
+  margin-top: 8px;
 }

@@ -126,11 +126,30 @@ canvas {
 .instruction-display {
   width: 780px;
   background-color: #efefef;
-  height: 100px;
   border: 1px solid #ccc;
   padding: 10px; }
 
 .canvasDiv {
   margin-bottom: 20px; }
+
+.instruction {
+  width: 98%;
+  font-size: 1.6em;
+  color: #333;
+  margin-bottom: 5px; }
+
+#ins-button {
+  padding: 20px;
+  font-size: 1.4em; }
+
+.insButton {
+  display: block;
+  background-color: #ddd;
+  padding: 10px;
+  color: #333;
+  width: 120px;
+  text-align: center;
+  font-size: 1.0em;
+  margin-top: 8px; }
 
 /*# sourceMappingURL=main.css.map */

@@ -9,6 +9,7 @@
     <script src="modernizr.js"></script>
     <script src="lodash.js"></script>
     <script src="lewittscript.js"></script>
+
   </head>
   <body>
 
@@ -23,10 +24,12 @@
 
       <h4>Instruction:</h4>
       <div class="instruction-display">
-        <p class="instruction-text">Seed: <span id="seed"></span></p>
-        <p class="instruction-user">Instruction: <span id="userInstruction"></span></p>
+
+        <input type="text" name="input1" id="input1" class="instruction">
+        <input type="text" name="input2" id="input2" class="instruction">
+        <a href="javascript: handleInput()" class="insButton">Make some art</a>
+
       </div>
     </div>
-
   </body>
 </html>
