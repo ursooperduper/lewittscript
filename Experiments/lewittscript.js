@@ -601,7 +601,9 @@ function LeWittApp(inputs) {
       "i"
     );
     var pattern2 = RegExp(
-      "(the background is) ([a-zA-Z ]+)* ?(?:.)",
+      "(the background is) (" + 
+      _.keys(colors).join('|') +
+      ")(?:.)",
       "i"
     );
     var patternList             = [pattern1, pattern2];
@@ -676,6 +678,11 @@ function LeWittApp(inputs) {
             what:         insWhat,
             color:        insColor
           });
+
+          Debugger.log("Description: " + insDesc);
+          Debugger.log("What: " + insWhat);
+          Debugger.log("Color: " + insColor);
+
           backgroundInstructions.push(instruction);
 
         } else {
@@ -714,8 +721,10 @@ function LeWittApp(inputs) {
         height  : canvas.height,
         xPos    : 0,
         yPos    : 0,
-        color   : color
+        color   : colors[color]
       });
+
+      Debugger.log("COLOR: " + color);
       background.draw();
     });
 
