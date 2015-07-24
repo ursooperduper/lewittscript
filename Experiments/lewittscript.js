@@ -15,6 +15,7 @@ function LeWittApp(inputs) {
   if (!canvasSupport()) {
     return;
   }
+
   var canvas  = document.getElementById("canvas");
   var context = canvas.getContext("2d");
   var colors = {
@@ -169,6 +170,7 @@ function LeWittApp(inputs) {
     huge    : 300,
     random  : 40
   };
+
   // TODO Handle statements that include positions for shapes
   var positions = [
     "grid",
@@ -601,7 +603,7 @@ function LeWittApp(inputs) {
       "i"
     );
     var pattern2 = RegExp(
-      "(the background is) (" + 
+      "(the background is) (" +
       _.keys(colors).join('|') +
       ")(?:.)",
       "i"
