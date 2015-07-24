@@ -1,14 +1,13 @@
-// The background is orange.
-// The rectangles are different colors.
-// The rectangles are in opposite corners.
-// The canvas is filled with circles.
-// The canvas is filled with thick diagonal lines.
-// There are 4 circles, one in each corner.
-// There are 20 randomly spaced dots.
-// There are lines radiating out from each dot.
-// There is a large black square.
-// There are 20 tiny crimson triangles.
-// Each square has a dot in the middle of it.
+// The background is orange. [/]
+// There are 4 circles. [/]
+// There are 20 tiny crimson triangles. [/]
+// Each square has a dot inside it. [/]
+// There is a large black square. [/]
+// Each rectangles are different colors. [ ]
+// Each rectangles are in opposite corners. [ ]
+// There are 20 dots radonly spaced. [ ]
+// There are lines radiating out from each dot. [ ]
+// There is a green triangle beside the blue square. [ ]
 
 start
  = sentences
@@ -19,32 +18,32 @@ sentences
     { rest.append(first); return rest; }
 
 sentence
- = bg:bgdescription { return bg; }
- / scc:initialShapeDescription { return scc; }
+ = bg: backgroundDescription { return bg; }
+ / scc: initialShapeDescription { return scc; }
  / sm: shapeModifier { return sm; }
 
 
-bgdescription
- = THE _ background _ TOBE _ col:COLOR[.]* { return col; }
+backgroundDescription
+ = the _ background _ toBe _ col:color[.]* { return col; }
 
 initialShapeDescription
- = THE _ TOBE _ COUNT _? SIZE _? COLOR _? SHAPE[s]*[.]*
+ = the _ toBe _ count _? size _? color _? shape[s]*[.]*
 
 shapeModifier
- = THE _ SHAPE _ TOBE _ AA _ SIZE _? COLOR _? SHAPE _ LOCATION[.]*
+ = the _ shape _ toBe _ count _? size _? color _? shape _ location[.]*
 
 background
  = 'background'
 
-THE
+the
  = "there"
  / "the"
  / "each"
 
-AA
+aa
  = "a"
 
-LOCATION
+location
  = "in it"
  / "beside it"
  / "inside it"
@@ -52,15 +51,26 @@ LOCATION
  / "under it"
  / "underneath it"
 
-TOBE
- = "is a"
- / "is"
+toBe
+ = "is"
  / "are"
  / "will be"
  / "should be"
  / "must be"
+ / "has a"
 
-COLOR
+// TODO: No alignment options have been implemented yet. Needs more thought.
+alignment
+ = "grid"
+ / "right diagonal"
+ / "left diagonal"
+ / "random"
+ / "smile"
+ / "frown"
+ / "stack"
+ / "randomly"
+
+color
  = value: "pink" { return { color: value, hex: "#FFC0CB" }; }
  / value: "light pink" { return { color: value, hex: "#FFB6C1" }; }
  / value: "hot pink" { return { color: value, hex: "#FF69B4" }; }
@@ -204,7 +214,7 @@ COLOR
  / value: "rebecca purple" { return { color: value, hex: "#663399" }; }
  / { return { color: "default", hex: "#000000" }; }
 
-SIZE
+size
  = value: "tiny" { return { size: value, num: 20 }; }
  / value: "small" { return { size: value, num: 50 }; }
  / value: "medium" { return { size: value, num: 100 }; }
@@ -213,7 +223,7 @@ SIZE
  / value: "huge" { return { size: value, num: 300 }; }
  / { return { size: "default", num: 30 }; }
 
-SHAPE
+shape
  = value: "circle" { return { shape: value }; }
  / value: "rectangle" { return { shape: value }; }
  / value: "triangle" { return { shape: value }; }
@@ -227,8 +237,9 @@ SHAPE
  / value: "point" { return { shape: value }; }
  / { return { shape: "default" }; }
 
-COUNT
+count
  = value: integer { return { count: value }; }
+ / value: "a" { return { count: 1 }; }
  / { return { count: 0 }; }
 
 integer
