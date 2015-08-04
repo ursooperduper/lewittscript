@@ -18,6 +18,9 @@ function LeWittApp(inputs) {
 
   var canvas  = document.getElementById("canvas");
   var context = canvas.getContext("2d");
+
+
+
   var colors = {
     "pink"                    : "#FFC0CB",
     "light pink"              : "#FFB6C1",
@@ -161,6 +164,7 @@ function LeWittApp(inputs) {
     "black"                   : "#000000",
     "rebecca purple"          : "#663399"
   };
+
   var sizes = {
     tiny    : 20,
     small   : 50,
@@ -347,6 +351,13 @@ function LeWittApp(inputs) {
 
     _.assign(props, config);
 
+    Debugger.log("COLOR: " + props.color);
+    Debugger.log("WIDTH: " + props.width);
+    Debugger.log("HEIGHT: " + props.height);
+    Debugger.log("XPOS: " + props.xPos);
+    Debugger.log("YPOS: " + props.yPos);
+
+
     function draw() {
       context.beginPath();
       context.fillStyle = colors[props.color];
@@ -529,9 +540,9 @@ function LeWittApp(inputs) {
     "rectangle"     : Rectangle,
     "triangle"      : Triangle,
     "spiral"        : Spiral,
-    "wavy line"     : WavyLine,
-    "straight line" : StraightLine,
-    "zigzag line"   : ZigzagLine,
+    "wavyline"      : WavyLine,
+    "straightline"  : StraightLine,
+    "zigzagline"    : ZigzagLine,
     "square"        : Rectangle,
     "oval"          : Circle,
     "dot"           : Circle,
@@ -545,7 +556,7 @@ function LeWittApp(inputs) {
 
     props = {
       description   : null,
-      what          : "the background is",
+      what          : "background",
       color         : colors.black
     };
 
@@ -564,7 +575,7 @@ function LeWittApp(inputs) {
 
     props = {
       description     : null,
-      what            : "there is",
+      what            : "shape",
       number          : 1,
       shape           : "circle",
       size            : "small",
@@ -589,135 +600,48 @@ function LeWittApp(inputs) {
     return retVal;
   };
 
-  var parse = function(inputs) {
+  var instructionTypes = {
+    "backgroundIns"  : BackgroundInstruction,
+    "shapeIns"       : ShapeInstruction
+  };
+
+  var appAssets = {
+    colors            : colors,
+    sizes             : sizes,
+    positions         : positions,
+    shapes            : shapes,
+    instructionTypes  : instructionTypes
+  };
+
+  var parseInput = function(inputs) {
     // TODO Handle both fill and line colors.
 
-    var pattern1 = RegExp(
-      "(there is|there are) (a|an|[0-9]+) ?(" +
-      _.keys(sizes).join('|') +
-      ")* ?(" +
-      _.keys(colors).join('|') +
-      ")* +(" +
-      _.keys(shapes).join('|') +
-      ")(?:.)",
-      "i"
-    );
-    var pattern2 = RegExp(
-      "(the background is) (" +
-      _.keys(colors).join('|') +
-      ")(?:.)",
-      "i"
-    );
-    var patternList             = [pattern1, pattern2];
-    var instructions            = [];
-    var drawInstructions        = [];
-    var backgroundInstructions  = [];
+    var instructions = [];
+    var backgroundInstructions = [];
+    var shapeInstructions = [];
+    var parsedInstructions;
 
     _.each(inputs, function(input) {
-      var insNum    = 0;
-      var match     = null;
-      var insColor;
-      var insShape;
-      var insSize;
-      var insWhat;
+      input = input.toLowerCase().trim();
+      parsedInstructions = parser.parse(input, appAssets);
 
-      _.each(patternList, function(pattern) {
-        var result = _.compact(pattern.exec(input.toLowerCase()));
-
-        if (result.length) {
-          match = result;
-          console.log("parse() :: match: ", match);
-        }
-      });
-
-      if (match) {
-        var insDesc = input;
-
-        Debugger.log("match: " + insDesc);
-
-        _.each(match, function(item) {
-
-          var color   = _.has(colors, item);
-          var shape   = _.has(shapes, item);
-          var size    = _.has(sizes, item);
-
-          var numMatcher      = RegExp("([0-9]+)");
-          var numMatchResult  = numMatcher.exec(item);
-
-          if (numMatchResult) {
-            insNum = numMatchResult[1];
-          }
-
-          if (item == "there is" ||
-              item == "there are" ||
-              item == "the background is") {
-            insWhat = item;
-          }
-          if (item == "a" || item == "an") {
-            insNum = 1;
-          }
-
-          if (color === true ) {
-            insColor = item;
-          }
-          if (shape === true) {
-            insShape = item;
-          }
-          if (size === true) {
-            insSize = item;
-          }
-        });
-
-        if (insSize === undefined) {
-          insSize = "small";
-        }
-
-        var instruction;
-
-        if (insWhat === "the background is" ) {
-          instruction = BackgroundInstruction({
-            description:  insDesc,
-            what:         insWhat,
-            color:        insColor
-          });
-
-          Debugger.log("Description: " + insDesc);
-          Debugger.log("What: " + insWhat);
-          Debugger.log("Color: " + insColor);
-
-          backgroundInstructions.push(instruction);
-
-        } else {
-          console.log("parse(): description ", insDesc);
-          console.log("parse(): what ", insWhat);
-          console.log("parse(): shape ", insShape);
-          console.log("parse(): size ", insSize);
-          console.log("parse(): number ", insNum);
-          console.log("parse(): color ", insColor);
-          instruction = ShapeInstruction({
-            description:  insDesc,
-            what:         insWhat,
-            shape:        insShape,
-            size:         insSize,
-            number:       insNum,
-            color:        insColor
-          });
-          drawInstructions.push(instruction);
-        }
-        instructions.push(backgroundInstructions);
-        instructions.push(drawInstructions);
+      if (parsedInstructions[0].getwhat() === "background") {
+        backgroundInstructions.push(parsedInstructions[0]);
+      } else {
+        shapeInstructions.push(parsedInstructions[0]);
       }
     });
 
-    console.log("parse() :: Instructions: ", instructions);
+    instructions.push(backgroundInstructions, shapeInstructions);
 
+    // Debugger.log("Background instruction keys: " + _.keys(instructions[0][0]));
     return instructions;
   };
 
   var draw = function(instructions) {
 
     _.each(instructions[0], function(ins) {
-      var color = ins.getcolor();
+      var color = ins.getcolor().name;
       var background = Rectangle({
         width   : canvas.width,
         height  : canvas.height,
@@ -726,36 +650,35 @@ function LeWittApp(inputs) {
         color   : colors[color]
       });
 
-      Debugger.log("COLOR: " + color);
       background.draw();
     });
 
     _.each(instructions[1], function(ins) {
+
       var padding       = 5; // TODO Update padding when positioning works
       var shapeConfig   = {};
       var pointsStore   = [];
       var what          = ins.getwhat();
       var number        = ins.getnumber();
       var shape         = ins.getshape();
-      var size          = ins.getsize();
+      var size          = ins.getsize().num;
       var position      = ins.getposition();
-      var color         = ins.getcolor();
+      var color         = ins.getcolor().name;
       var xPos;
       var yPos;
       var shapeToDraw;
       var totalWidth;
 
-      if (what == "there is" || what == "there are") {
+      if (what === "shape") {
 
         // FIXME Correct the positioning of shapes
         // triangles and circles are way off
-        totalWidth  = sizes[size] * number + padding * (number - 1);
+        totalWidth  = size * number + padding * (number - 1);
         xPos        = (canvas.width - totalWidth) / 2;
-        yPos        = (canvas.height - sizes[size]) / 2;
+        yPos        = (canvas.height - size) / 2;
 
         for (var x = 0; x < number; x++) {
           switch (shape) {
-
           case "circle":
           case "square":
           case "triangle":
@@ -764,8 +687,8 @@ function LeWittApp(inputs) {
               color   : color,
               xPos    : xPos,
               yPos    : yPos,
-              width   : sizes[size],
-              height  : sizes[size]
+              width   : size,
+              height  : size
             };
             break;
 
@@ -786,7 +709,7 @@ function LeWittApp(inputs) {
           }
           shapeToDraw = shapes[shape](shapeConfig);
           shapeToDraw.draw();
-          xPos += sizes[size] + padding;
+          xPos += size + padding;
         }
 
         if (pointsStore.length) {
@@ -814,7 +737,7 @@ function LeWittApp(inputs) {
     });
   };
   clearCanvas();
-  var instructions = parse(inputs);
+  var instructions = parseInput(inputs);
   draw(instructions);
 }
 
