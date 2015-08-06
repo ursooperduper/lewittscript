@@ -19,8 +19,6 @@ function LeWittApp(inputs) {
   var canvas  = document.getElementById("canvas");
   var context = canvas.getContext("2d");
 
-
-
   var colors = {
     "pink"                    : "#FFC0CB",
     "light pink"              : "#FFB6C1",
@@ -187,7 +185,7 @@ function LeWittApp(inputs) {
     "inside"
   ];
 
-// UTILITIES
+// -- Utilities ----------------------------------------------------------
   var makeProp = function(obj, props, name) {
     var setter = "set" + name;
     var getter = "get" + name;
@@ -239,7 +237,7 @@ function LeWittApp(inputs) {
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-// -- Generators ---------------------------------------------------------
+// -- Generators --------------------------------------------------------------
   var ConstGen = function(k) {
     var value = k;
 
@@ -268,7 +266,7 @@ function LeWittApp(inputs) {
     };
   };
 
-// -- Shapes -------------------------------------------------------------
+// -- Shapes ------------------------------------------------------------------
   var Circle = function(config) {
       var props = {
         color       : "grey",
@@ -350,13 +348,6 @@ function LeWittApp(inputs) {
     };
 
     _.assign(props, config);
-
-    Debugger.log("COLOR: " + props.color);
-    Debugger.log("WIDTH: " + props.width);
-    Debugger.log("HEIGHT: " + props.height);
-    Debugger.log("XPOS: " + props.xPos);
-    Debugger.log("YPOS: " + props.yPos);
-
 
     function draw() {
       context.beginPath();
@@ -549,7 +540,7 @@ function LeWittApp(inputs) {
     "point"         : Circle
   };
 
-// -- Core  ---------------------------------------------------------------------
+// -- Core  -------------------------------------------------------------------
   var BackgroundInstruction = function(config) {
     var props   = {};
     var retVal  = {};
@@ -605,6 +596,8 @@ function LeWittApp(inputs) {
     "shapeIns"       : ShapeInstruction
   };
 
+  // An object containing all the art description types (shapes, sizes, etc.)
+  // This is passed to the parser to aid in evaluation of user input.
   var appAssets = {
     colors            : colors,
     sizes             : sizes,
@@ -622,12 +615,14 @@ function LeWittApp(inputs) {
     var parsedInstructions;
 
     _.each(inputs, function(input) {
-      input = input.toLowerCase().trim();
-      parsedInstructions = parser.parse(input, appAssets);
+      parsedInstructions = parser.parse(input.toLowerCase().trim(), appAssets);
 
       if (parsedInstructions[0].getwhat() === "background") {
         backgroundInstructions.push(parsedInstructions[0]);
       } else {
+        // This only supports basic draw shape instructions so far,
+        // so this else statement is enough.
+        // TODO: Support shape modifier instructions as well.
         shapeInstructions.push(parsedInstructions[0]);
       }
     });
@@ -641,6 +636,8 @@ function LeWittApp(inputs) {
   var draw = function(instructions) {
 
     _.each(instructions[0], function(ins) {
+      // This is a background, so we just need to draw a square
+      // that fills the canvas.
       var color = ins.getcolor().name;
       var background = Rectangle({
         width   : canvas.width,
@@ -677,6 +674,15 @@ function LeWittApp(inputs) {
         xPos        = (canvas.width - totalWidth) / 2;
         yPos        = (canvas.height - size) / 2;
 
+        // If the width of the shapes to be drawn is wider than the canvas,
+        // We need to draw the shapes in rows.
+        if (totalWidth > canvas.width) {
+
+        }
+
+        Debugger.log("Total width of shapes: " + totalWidth);
+        Debugger.log("Width of the canvas: " + canvas.width);
+
         for (var x = 0; x < number; x++) {
           switch (shape) {
           case "circle":
@@ -690,6 +696,7 @@ function LeWittApp(inputs) {
               width   : size,
               height  : size
             };
+            Debugger.log("xPos: " + xPos);
             break;
 
           case "dot" :
@@ -736,6 +743,7 @@ function LeWittApp(inputs) {
       }
     });
   };
+
   clearCanvas();
   var instructions = parseInput(inputs);
   draw(instructions);

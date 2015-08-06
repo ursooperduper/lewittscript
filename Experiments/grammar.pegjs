@@ -242,21 +242,6 @@ shape
 / value: "dot"             { return value; }
 / value: "point"           { return value; }
 /                          { return "square"; }
-/*
- = value: "circle"          { return options.shapes[value]; }
- / value: "rectangle"       { return options.shapes[value]; }
- / value: "triangle"        { return options.shapes[value]; }
- / value: "spiral"          { return options.shapes[value]; }
- / value: "wavy line"       { return options.shapes[value]; }
- / value: "straight line"   { return options.shapes[value]; }
- / value: "zigzag line"     { return options.shapes[value]; }
- / value: "square"          { return options.shapes[value]; }
- / value: "oval"            { return options.shapes[value]; }
- / value: "dot"             { return options.shapes[value]; }
- / value: "point"           { return options.shapes[value]; }
- /                          { return options.shapes["square"]; }
-*/
-
 
 count
  = value: integer           { return value }
