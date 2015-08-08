@@ -1,0 +1,245 @@
+// bower:scss
+// endbower
+
+$font-stack:            "Helvetica-Neue", "Helvetica", sans-serif;
+$base-font-size:        0.8em;
+$small-font-size:       0.75em;
+
+$background-color:      #fff;
+$txt-color:             #383838;
+
+$base-line-height:  1.4;
+$spacing-unit:          20px;
+
+body {
+  background: #fafafa;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.browsehappy {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+/* Resets */
+
+body, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, hr,
+dl, dd, ol, ul, figure {
+  margin: 0;
+  padding: 0;
+}
+
+/* Basics */
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font: {
+    family: $font-stack;
+    size: $base-font-size;
+    weight: 300;
+  }
+  line-height: $base-line-height;
+  color: $txt-color;
+  background-color: $background-color;
+
+}
+
+/* Set 'margin-bottom' to maintain vertycal rhythm */
+h1, h2, h3, h4, h5, h6,
+p, blockquote, pre,
+ul, ol, dl, figure,
+%vertical-rhythm {
+  margin-bottom: $spacing-unit / 2;
+}
+
+
+/* Images */
+img {
+  max-width: 100%;
+  vertical-align: middle;
+  display: block;
+  margin: {
+    left: auto;
+    right: auto;
+  }
+}
+
+img.sideby {
+  float: left;
+}
+
+/* Figures */
+figure > img {
+  display: block;
+}
+
+figcaption {
+  font-size: $small-font-size;
+}
+
+
+/* Lists */
+ul, ol {
+  margin-left: $spacing-unit;
+}
+
+li {
+  > ul,
+  > ol {
+    margin-bottom: 0;
+  }
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: darken($txt-color, 20%);
+}
+
+
+/* Links */
+a {
+  color: darken($txt-color, 20%);
+  text-decoration: none;
+
+  &:visited {
+    color: darken($txt-color, 20%);
+    text-decoration: none;
+  }
+
+  &:hover {
+    color: darken($txt-color, 35%);
+    text-decoration: underline;
+  }
+}
+
+
+/* Blockquotes */
+blockquote {
+  color: $txt-color;
+  border-left: 4px solid $background-color;
+  padding: {
+    left: $spacing-unit / 2;
+    top: $spacing-unit / 2;
+    bottom: $spacing-unit / 2;
+  }
+  font: {
+    size: 1.05em;
+    style: italic;
+  }
+  letter-spacing: -1px;
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}
+
+
+iframe {
+  display: block;
+  margin: {
+    left: auto;
+    right: auto;
+  }
+  margin-bottom: $spacing-unit;
+}
+
+
+/* Code Formatting */
+pre, code {
+  font-size: 15px;
+  border: 1px solid $background-color;
+  border-radius: 3px;
+  background-color: #eef;
+}
+
+code {
+  padding: 1px 5px;
+}
+
+pre {
+  padding: 8px 12px;
+  overflow-x: scroll;
+
+  > code {
+    border: 0;
+    padding: {
+      right: 0;
+      left: 0;
+    }
+  }
+}
+
+hr {
+  border: 0;
+  border-bottom: 1px dashed #ccc;
+  background: #999;
+  margin-bottom: $spacing-unit;
+}
+
+/* Clearfix */
+%clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+.container {
+  width: 800px;
+  padding: 20px;
+  margin: 0px auto;
+}
+
+.container:after {
+  content: "";
+  display: block;
+}
+
+canvas {
+  border: 1px solid #ccc;
+  width: 800px;
+  height: 450px;
+}
+
+.instruction-display {
+  width: 780px;
+  background-color: #efefef;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.canvasDiv {
+  margin-bottom: $spacing-unit;
+}
+
+.instruction {
+  width: 98%;
+  font-size: 1.6em;
+  color: #333;
+  margin-bottom: $spacing-unit / 4;
+}
+
+#ins-button {
+  padding: $spacing-unit;
+  font-size: 1.4em;
+}
+
+.insButton {
+  display: block;
+  background-color: #ddd;
+  padding: $spacing-unit / 2;
+  color: #333;
+  width: 120px;
+  text-align: center;
+  font-size: 1.0em;
+  margin-top: 8px;
+}

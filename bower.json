@@ -1,0 +1,12 @@
+{
+  "name": "lewittscript",
+  "private": true,
+  "dependencies": {
+    "modernizr": "~2.8.3",
+    "lodash": "-3.10.1"
+  },
+  "devDependencies": {
+    "chai": "~3.2.0",
+    "mocha": "~2.2.5"
+  }
+}
