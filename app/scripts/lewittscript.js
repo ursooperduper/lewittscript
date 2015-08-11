@@ -173,6 +173,14 @@ function LeWittApp(inputs) {
     random  : 40
   };
 
+  var borders = {
+    thick   : 100,
+    wide    : 200,
+    thin    : 20,
+    narrow  : 10,
+    default : 5
+  };
+
   // TODO Handle statements that include positions for shapes
   var positions = [
     "grid",
@@ -307,21 +315,21 @@ function LeWittApp(inputs) {
 
   var Rectangle = function(config) {
     var props = {
-      color     : "grey",
-      width     : ConstGen(50),
-      height    : ConstGen(50),
-      xPos      : ConstGen(0),
-      yPos      : ConstGen(0),
-      lineWidth : 1
+      fillColor     : colors.black,
+      strokeColor   : null,
+      width         : ConstGen(50),
+      height        : ConstGen(50),
+      xPos          : ConstGen(0),
+      yPos          : ConstGen(0),
+      lineWidth     : 1
     };
 
     _.assign(props, config);
 
     function draw() {
-      context.fillStyle = props.color;
+      context.fillStyle = props.fillColor;
       context.lineWidth = props.lineWidth;
       context.beginPath();
-      // context.strokeStyle = props.color;
       context.rect(
         props.xPos,
         props.yPos,
@@ -329,7 +337,10 @@ function LeWittApp(inputs) {
         props.height
       );
       context.fill();
-      // context.stroke();
+      if ( props.strokeColor !== null ) {
+        context.strokeStyle = props.strokeColor;
+        context.stroke();
+      }
     }
 
     return {
@@ -339,7 +350,7 @@ function LeWittApp(inputs) {
 
   var Triangle = function(config) {
     var props = {
-      color     : "grey",
+      color     : colors.black,
       width     : ConstGen(50),
       height    : ConstGen(50),
       xPos      : 0,
@@ -560,6 +571,27 @@ function LeWittApp(inputs) {
     return retVal;
   };
 
+  var BackgroundBorderInstruction = function(config) {
+    var props   = {};
+    var retVal  = {};
+
+    props = {
+      description : null,
+      what        : "bgBorder",
+      color       : colors.black,
+      thickness   : borders.default
+    };
+
+    _.assign(props, config);
+
+    makeProp(retVal, props, "description");
+    makeProp(retVal, props, "what");
+    makeProp(retVal, props, "color");
+    makeProp(retVal, props, "thickness");
+
+    return retVal;
+  };
+
   var ShapeInstruction = function(config) {
     var props   = {};
     var retVal  = {};
@@ -592,8 +624,9 @@ function LeWittApp(inputs) {
   };
 
   var instructionTypes = {
-    "backgroundIns"  : BackgroundInstruction,
-    "shapeIns"       : ShapeInstruction
+    "backgroundIns"   : BackgroundInstruction,
+    "bgBorderIns"     : BackgroundBorderInstruction,
+    "shapeIns"        : ShapeInstruction
   };
 
   // An object containing all the art description types (shapes, sizes, etc.)
@@ -603,15 +636,15 @@ function LeWittApp(inputs) {
     sizes             : sizes,
     positions         : positions,
     shapes            : shapes,
-    instructionTypes  : instructionTypes
+    instructionTypes  : instructionTypes,
+    borders           : borders
   };
 
   var parseInput = function(inputs) {
-    // TODO Handle both fill and line colors.
-
-    var instructions = [];
-    var backgroundInstructions = [];
-    var shapeInstructions = [];
+    var instructions                  = [];
+    var backgroundInstructions        = [];
+    var backgroundBorderInstructions  = [];
+    var shapeInstructions             = [];
     var parsedInstructions;
 
     _.each(inputs, function(input) {
@@ -619,15 +652,14 @@ function LeWittApp(inputs) {
 
       if (parsedInstructions[0].getwhat() === "background") {
         backgroundInstructions.push(parsedInstructions[0]);
+      } else if (parsedInstructions[0].getwhat() === "bgborder") {
+        backgroundBorderInstructions.push(parsedInstructions[0]);
       } else {
-        // This only supports basic draw shape instructions so far,
-        // so this else statement is enough.
-        // TODO: Support shape modifier instructions as well.
         shapeInstructions.push(parsedInstructions[0]);
       }
     });
 
-    instructions.push(backgroundInstructions, shapeInstructions);
+    instructions.push(backgroundInstructions, backgroundBorderInstructions, shapeInstructions);
 
     // Debugger.log("Background instruction keys: " + _.keys(instructions[0][0]));
     return instructions;
@@ -638,19 +670,29 @@ function LeWittApp(inputs) {
     _.each(instructions[0], function(ins) {
       // This is a background, so we just need to draw a square
       // that fills the canvas.
-      var color = ins.getcolor().name;
+      var color         = ins.getcolor();
+      var lineWidth     = 1;
+      var strokeColor   = null;
+
+      _.each(instructions[1], function(bgins) {
+        strokeColor     = bgins.getcolor();
+        lineWidth       = bgins.getthickness();
+      });
+
       var background = Rectangle({
-        width   : canvas.width,
-        height  : canvas.height,
-        xPos    : 0,
-        yPos    : 0,
-        color   : colors[color]
+        width       : canvas.width,
+        height      : canvas.height,
+        xPos        : 0,
+        yPos        : 0,
+        fillColor   : colors[color],
+        strokeColor : colors[strokeColor],
+        lineWidth   : borders[lineWidth]
       });
 
       background.draw();
     });
 
-    _.each(instructions[1], function(ins) {
+    _.each(instructions[2], function(ins) {
 
       var padding       = 5; // TODO Update padding when positioning works
       var shapeConfig   = {};
@@ -658,9 +700,9 @@ function LeWittApp(inputs) {
       var what          = ins.getwhat();
       var number        = ins.getnumber();
       var shape         = ins.getshape();
-      var size          = ins.getsize().num;
+      var size          = sizes[ins.getsize()];
       var position      = ins.getposition();
-      var color         = ins.getcolor().name;
+      var color         = ins.getcolor();
       var xPos;
       var yPos;
       var shapeToDraw;
@@ -677,11 +719,8 @@ function LeWittApp(inputs) {
         // If the width of the shapes to be drawn is wider than the canvas,
         // We need to draw the shapes in rows.
         if (totalWidth > canvas.width) {
-
+          Debugger.log("This will take more space to render than the available canvas space.");
         }
-
-        Debugger.log("Total width of shapes: " + totalWidth);
-        Debugger.log("Width of the canvas: " + canvas.width);
 
         for (var x = 0; x < number; x++) {
           switch (shape) {
@@ -696,7 +735,6 @@ function LeWittApp(inputs) {
               width   : size,
               height  : size
             };
-            Debugger.log("xPos: " + xPos);
             break;
 
           case "dot" :
@@ -751,10 +789,9 @@ function LeWittApp(inputs) {
 
 var handleInput = function() {
 
-  // TODO Handle any number of user inputs.
   var userInputs = [];
 
-  for (var x = 0; x < 2; x++ ) {
+  for (var x = 0; x < 3; x++ ) {
     var element = document.getElementById("input" + (x + 1));
     if (element.value.length > 0) {
       userInputs.push(element.value);

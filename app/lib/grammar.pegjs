@@ -18,21 +18,22 @@ sentences
     { rest.append(first); return rest; }*/
 
 sentence
- = bg: backgroundDescription { return bg; }
- / sd: initialShapeDescription { return sd; }
- / sm: shapeModifier { return sm; }
+ = bg: backgroundDescription        { return bg; }
+ / bd: backgroundBorderDescription  { return bd; }
+ / sd: initialShapeDescription      { return sd; }
+ // sm: shapeModifier                { return sm; }
 
 backgroundDescription
  = the _ background _ toBe _ col:color[.]*
- {
-   return options.instructionTypes.backgroundIns( { color: col, what: "background" } );
- }
+ { return options.instructionTypes.backgroundIns({ what : "background", color : col});}
+
+backgroundBorderDescription
+ = the _ toBe _ aa _ th:thickness _? cl:color _? border[.]*
+ { return options.instructionTypes.bgBorderIns({ what : "bgborder", color : cl, thickness : th }); }
 
 initialShapeDescription
  = the _ toBe _ cnt:count _? siz:size _? col:color _? sh:shape[s]*[.]*
- {
-   return options.instructionTypes.shapeIns( { number: cnt, shape: sh, size: siz, color: col, what: "shape" } );
- }
+ { return options.instructionTypes.shapeIns({ number : cnt, shape : sh, size : siz, color : col, what : "shape" }); }
 
 // Not implemented yet.
 shapeModifier
@@ -40,6 +41,9 @@ shapeModifier
 
 background
  = 'background'
+
+border
+ = 'border'
 
 the
  = "there"
@@ -77,171 +81,178 @@ alignment
  / "randomly"
 
 color
- = value: "pink"                    { return { name: value, hex: options.colors[value] }; }
- / value: "light pink"              { return { name: value, hex: options.colors[value] }; }
- / value: "hot pink"                { return { name: value, hex: options.colors[value] }; }
- / value: "deep pink"               { return { name: value, hex: options.colors[value] }; }
- / value: "pale violet red"         { return { name: value, hex: options.colors[value] }; }
- / value: "medium violet red"       { return { name: value, hex: options.colors[value] }; }
- / value: "light salmon"            { return { name: value, hex: options.colors[value] }; }
- / value: "salmon"                  { return { name: value, hex: options.colors[value] }; }
- / value: "dark salmon"             { return { name: value, hex: options.colors[value] }; }
- / value: "light coral"             { return { name: value, hex: options.colors[value] }; }
- / value: "indian red"              { return { name: value, hex: options.colors[value] }; }
- / value: "crimson"                 { return { name: value, hex: options.colors[value] }; }
- / value: "fire brick"              { return { name: value, hex: options.colors[value] }; }
- / value: "dark red"                { return { name: value, hex: options.colors[value] }; }
- / value: "red"                     { return { name: value, hex: options.colors[value] }; }
- / value: "orange red"              { return { name: value, hex: options.colors[value] }; }
- / value: "tomato"                  { return { name: value, hex: options.colors[value] }; }
- / value: "coral"                   { return { name: value, hex: options.colors[value] }; }
- / value: "dark orange"             { return { name: value, hex: options.colors[value] }; }
- / value: "orange"                  { return { name: value, hex: options.colors[value] }; }
- / value: "yellow"                  { return { name: value, hex: options.colors[value] }; }
- / value: "light yellow"            { return { name: value, hex: options.colors[value] }; }
- / value: "lemon chiffon"           { return { name: value, hex: options.colors[value] }; }
- / value: "light goldenrod yellow"  { return { name: value, hex: options.colors[value] }; }
- / value: "papaya whip"             { return { name: value, hex: options.colors[value] }; }
- / value: "moccasin"                { return { name: value, hex: options.colors[value] }; }
- / value: "peach puff"              { return { name: value, hex: options.colors[value] }; }
- / value: "pale goldenrod"          { return { name: value, hex: options.colors[value] }; }
- / value: "khaki"                   { return { name: value, hex: options.colors[value] }; }
- / value: "dark khaki"              { return { name: value, hex: options.colors[value] }; }
- / value: "gold"                    { return { name: value, hex: options.colors[value] }; }
- / value: "cornsilk"                { return { name: value, hex: options.colors[value] }; }
- / value: "blanched almond"         { return { name: value, hex: options.colors[value] }; }
- / value: "bisque"                  { return { name: value, hex: options.colors[value] }; }
- / value: "navajo white"            { return { name: value, hex: options.colors[value] }; }
- / value: "wheat"                   { return { name: value, hex: options.colors[value] }; }
- / value: "burly wood"              { return { name: value, hex: options.colors[value] }; }
- / value: "tan"                     { return { name: value, hex: options.colors[value] }; }
- / value: "rosy brown"              { return { name: value, hex: options.colors[value] }; }
- / value: "sandy brown"             { return { name: value, hex: options.colors[value] }; }
- / value: "goldenrod"               { return { name: value, hex: options.colors[value] }; }
- / value: "dark goldenrod"          { return { name: value, hex: options.colors[value] }; }
- / value: "peru"                    { return { name: value, hex: options.colors[value] }; }
- / value: "chocolate"               { return { name: value, hex: options.colors[value] }; }
- / value: "saddle brown"            { return { name: value, hex: options.colors[value] }; }
- / value: "sienna"                  { return { name: value, hex: options.colors[value] }; }
- / value: "brown"                   { return { name: value, hex: options.colors[value] }; }
- / value: "maroon"                  { return { name: value, hex: options.colors[value] }; }
- / value: "dark olive green"        { return { name: value, hex: options.colors[value] }; }
- / value: "olive"                   { return { name: value, hex: options.colors[value] }; }
- / value: "olive drab"              { return { name: value, hex: options.colors[value] }; }
- / value: "yellow green"            { return { name: value, hex: options.colors[value] }; }
- / value: "lime green"              { return { name: value, hex: options.colors[value] }; }
- / value: "lime"                    { return { name: value, hex: options.colors[value] }; }
- / value: "lawn green"              { return { name: value, hex: options.colors[value] }; }
- / value: "chartreuse"              { return { name: value, hex: options.colors[value] }; }
- / value: "green yellow"            { return { name: value, hex: options.colors[value] }; }
- / value: "spring green"            { return { name: value, hex: options.colors[value] }; }
- / value: "medium spring green"     { return { name: value, hex: options.colors[value] }; }
- / value: "light green"             { return { name: value, hex: options.colors[value] }; }
- / value: "pale green"              { return { name: value, hex: options.colors[value] }; }
- / value: "dark sea green"          { return { name: value, hex: options.colors[value] }; }
- / value: "medium sea green"        { return { name: value, hex: options.colors[value] }; }
- / value: "sea green"               { return { name: value, hex: options.colors[value] }; }
- / value: "forest green"            { return { name: value, hex: options.colors[value] }; }
- / value: "green"                   { return { name: value, hex: options.colors[value] }; }
- / value: "dark green"              { return { name: value, hex: options.colors[value] }; }
- / value: "medium aquamarine"       { return { name: value, hex: options.colors[value] }; }
- / value: "aqua"                    { return { name: value, hex: options.colors[value] }; }
- / value: "cyan"                    { return { name: value, hex: options.colors[value] }; }
- / value: "light cyan"              { return { name: value, hex: options.colors[value] }; }
- / value: "pale turquoise"          { return { name: value, hex: options.colors[value] }; }
- / value: "aquamarine"              { return { name: value, hex: options.colors[value] }; }
- / value: "turquoise"               { return { name: value, hex: options.colors[value] }; }
- / value: "medium turquoise"        { return { name: value, hex: options.colors[value] }; }
- / value: "dark turquoise"          { return { name: value, hex: options.colors[value] }; }
- / value: "light sea green"         { return { name: value, hex: options.colors[value] }; }
- / value: "cadet blue"              { return { name: value, hex: options.colors[value] }; }
- / value: "dark cyan"               { return { name: value, hex: options.colors[value] }; }
- / value: "teal"                    { return { name: value, hex: options.colors[value] }; }
- / value: "light steel blue"        { return { name: value, hex: options.colors[value] }; }
- / value: "powder blue"             { return { name: value, hex: options.colors[value] }; }
- / value: "light blue"              { return { name: value, hex: options.colors[value] }; }
- / value: "sky blue"                { return { name: value, hex: options.colors[value] }; }
- / value: "light sky blue"          { return { name: value, hex: options.colors[value] }; }
- / value: "deep sky blue"           { return { name: value, hex: options.colors[value] }; }
- / value: "dodger blue"             { return { name: value, hex: options.colors[value] }; }
- / value: "cornflower blue"         { return { name: value, hex: options.colors[value] }; }
- / value: "steel blue"              { return { name: value, hex: options.colors[value] }; }
- / value: "royal blue"              { return { name: value, hex: options.colors[value] }; }
- / value: "blue"                    { return { name: value, hex: options.colors[value] }; }
- / value: "medium blue"             { return { name: value, hex: options.colors[value] }; }
- / value: "dark blue"               { return { name: value, hex: options.colors[value] }; }
- / value: "navy"                    { return { name: value, hex: options.colors[value] }; }
- / value: "midnight blue"           { return { name: value, hex: options.colors[value] }; }
- / value: "lavender"                { return { name: value, hex: options.colors[value] }; }
- / value: "thistle"                 { return { name: value, hex: options.colors[value] }; }
- / value: "plum"                    { return { name: value, hex: options.colors[value] }; }
- / value: "violet"                  { return { name: value, hex: options.colors[value] }; }
- / value: "orchid"                  { return { name: value, hex: options.colors[value] }; }
- / value: "fuchsia"                 { return { name: value, hex: options.colors[value] }; }
- / value: "magenta"                 { return { name: value, hex: options.colors[value] }; }
- / value: "medium orchid"           { return { name: value, hex: options.colors[value] }; }
- / value: "medium purple"           { return { name: value, hex: options.colors[value] }; }
- / value: "blue violet"             { return { name: value, hex: options.colors[value] }; }
- / value: "dark violet"             { return { name: value, hex: options.colors[value] }; }
- / value: "dark orchid"             { return { name: value, hex: options.colors[value] }; }
- / value: "dark magenta"            { return { name: value, hex: options.colors[value] }; }
- / value: "purple"                  { return { name: value, hex: options.colors[value] }; }
- / value: "indigo"                  { return { name: value, hex: options.colors[value] }; }
- / value: "dark slate blue"         { return { name: value, hex: options.colors[value] }; }
- / value: "slate blue"              { return { name: value, hex: options.colors[value] }; }
- / value: "medium slate blue"       { return { name: value, hex: options.colors[value] }; }
- / value: "white"                   { return { name: value, hex: options.colors[value] }; }
- / value: "snow"                    { return { name: value, hex: options.colors[value] }; }
- / value: "honeydew"                { return { name: value, hex: options.colors[value] }; }
- / value: "mint cream"              { return { name: value, hex: options.colors[value] }; }
- / value: "azure"                   { return { name: value, hex: options.colors[value] }; }
- / value: "alice blue"              { return { name: value, hex: options.colors[value] }; }
- / value: "ghost white"             { return { name: value, hex: options.colors[value] }; }
- / value: "white smoke"             { return { name: value, hex: options.colors[value] }; }
- / value: "seashell"                { return { name: value, hex: options.colors[value] }; }
- / value: "beige"                   { return { name: value, hex: options.colors[value] }; }
- / value: "old lace"                { return { name: value, hex: options.colors[value] }; }
- / value: "floral white"            { return { name: value, hex: options.colors[value] }; }
- / value: "ivory"                   { return { name: value, hex: options.colors[value] }; }
- / value: "antique white"           { return { name: value, hex: options.colors[value] }; }
- / value: "linen"                   { return { name: value, hex: options.colors[value] }; }
- / value: "lavender blush"          { return { name: value, hex: options.colors[value] }; }
- / value: "misty rose"              { return { name: value, hex: options.colors[value] }; }
- / value: "gainsboro"               { return { name: value, hex: options.colors[value] }; }
- / value: "light grey"              { return { name: value, hex: options.colors[value] }; }
- / value: "silver"                  { return { name: value, hex: options.colors[value] }; }
- / value: "dark gray"               { return { name: value, hex: options.colors[value] }; }
- / value: "gray"                    { return { name: value, hex: options.colors[value] }; }
- / value: "dim gray"                { return { name: value, hex: options.colors[value] }; }
- / value: "light slate gray"        { return { name: value, hex: options.colors[value] }; }
- / value: "slate gray"              { return { name: value, hex: options.colors[value] }; }
- / value: "dark slate gray"         { return { name: value, hex: options.colors[value] }; }
- / value: "black"                   { return { name: value, hex: options.colors[value] }; }
- / value: "rebecca purple"          { return { name: value, hex: options.colors[value] }; }
- /                                  { return { color: "default", hex: "#000000" }; }
+ = value: "pink"                    { return value; }
+ / value: "light pink"              { return value; }
+ / value: "hot pink"                { return value; }
+ / value: "deep pink"               { return value; }
+ / value: "pale violet red"         { return value; }
+ / value: "medium violet red"       { return value; }
+ / value: "light salmon"            { return value; }
+ / value: "salmon"                  { return value; }
+ / value: "dark salmon"             { return value; }
+ / value: "light coral"             { return value; }
+ / value: "indian red"              { return value; }
+ / value: "crimson"                 { return value; }
+ / value: "fire brick"              { return value; }
+ / value: "dark red"                { return value; }
+ / value: "red"                     { return value; }
+ / value: "orange red"              { return value; }
+ / value: "tomato"                  { return value; }
+ / value: "coral"                   { return value; }
+ / value: "dark orange"             { return value; }
+ / value: "orange"                  { return value; }
+ / value: "yellow"                  { return value; }
+ / value: "light yellow"            { return value; }
+ / value: "lemon chiffon"           { return value; }
+ / value: "light goldenrod yellow"  { return value; }
+ / value: "papaya whip"             { return value; }
+ / value: "moccasin"                { return value; }
+ / value: "peach puff"              { return value; }
+ / value: "pale goldenrod"          { return value; }
+ / value: "khaki"                   { return value; }
+ / value: "dark khaki"              { return value; }
+ / value: "gold"                    { return value; }
+ / value: "cornsilk"                { return value; }
+ / value: "blanched almond"         { return value; }
+ / value: "bisque"                  { return value; }
+ / value: "navajo white"            { return value; }
+ / value: "wheat"                   { return value; }
+ / value: "burly wood"              { return value; }
+ / value: "tan"                     { return value; }
+ / value: "rosy brown"              { return value; }
+ / value: "sandy brown"             { return value; }
+ / value: "goldenrod"               { return value; }
+ / value: "dark goldenrod"          { return value; }
+ / value: "peru"                    { return value; }
+ / value: "chocolate"               { return value; }
+ / value: "saddle brown"            { return value; }
+ / value: "sienna"                  { return value; }
+ / value: "brown"                   { return value; }
+ / value: "maroon"                  { return value; }
+ / value: "dark olive green"        { return value; }
+ / value: "olive"                   { return value; }
+ / value: "olive drab"              { return value; }
+ / value: "yellow green"            { return value; }
+ / value: "lime green"              { return value; }
+ / value: "lime"                    { return value; }
+ / value: "lawn green"              { return value; }
+ / value: "chartreuse"              { return value; }
+ / value: "green yellow"            { return value; }
+ / value: "spring green"            { return value; }
+ / value: "medium spring green"     { return value; }
+ / value: "light green"             { return value; }
+ / value: "pale green"              { return value; }
+ / value: "dark sea green"          { return value; }
+ / value: "medium sea green"        { return value; }
+ / value: "sea green"               { return value; }
+ / value: "forest green"            { return value; }
+ / value: "green"                   { return value; }
+ / value: "dark green"              { return value; }
+ / value: "medium aquamarine"       { return value; }
+ / value: "aqua"                    { return value; }
+ / value: "cyan"                    { return value; }
+ / value: "light cyan"              { return value; }
+ / value: "pale turquoise"          { return value; }
+ / value: "aquamarine"              { return value; }
+ / value: "turquoise"               { return value; }
+ / value: "medium turquoise"        { return value; }
+ / value: "dark turquoise"          { return value; }
+ / value: "light sea green"         { return value; }
+ / value: "cadet blue"              { return value; }
+ / value: "dark cyan"               { return value; }
+ / value: "teal"                    { return value; }
+ / value: "light steel blue"        { return value; }
+ / value: "powder blue"             { return value; }
+ / value: "light blue"              { return value; }
+ / value: "sky blue"                { return value; }
+ / value: "light sky blue"          { return value; }
+ / value: "deep sky blue"           { return value; }
+ / value: "dodger blue"             { return value; }
+ / value: "cornflower blue"         { return value; }
+ / value: "steel blue"              { return value; }
+ / value: "royal blue"              { return value; }
+ / value: "blue"                    { return value; }
+ / value: "medium blue"             { return value; }
+ / value: "dark blue"               { return value; }
+ / value: "navy"                    { return value; }
+ / value: "midnight blue"           { return value; }
+ / value: "lavender"                { return value; }
+ / value: "thistle"                 { return value; }
+ / value: "plum"                    { return value; }
+ / value: "violet"                  { return value; }
+ / value: "orchid"                  { return value; }
+ / value: "fuchsia"                 { return value; }
+ / value: "magenta"                 { return value; }
+ / value: "medium orchid"           { return value; }
+ / value: "medium purple"           { return value; }
+ / value: "blue violet"             { return value; }
+ / value: "dark violet"             { return value; }
+ / value: "dark orchid"             { return value; }
+ / value: "dark magenta"            { return value; }
+ / value: "purple"                  { return value; }
+ / value: "indigo"                  { return value; }
+ / value: "dark slate blue"         { return value; }
+ / value: "slate blue"              { return value; }
+ / value: "medium slate blue"       { return value; }
+ / value: "white"                   { return value; }
+ / value: "snow"                    { return value; }
+ / value: "honeydew"                { return value; }
+ / value: "mint cream"              { return value; }
+ / value: "azure"                   { return value; }
+ / value: "alice blue"              { return value; }
+ / value: "ghost white"             { return value; }
+ / value: "white smoke"             { return value; }
+ / value: "seashell"                { return value; }
+ / value: "beige"                   { return value; }
+ / value: "old lace"                { return value; }
+ / value: "floral white"            { return value; }
+ / value: "ivory"                   { return value; }
+ / value: "antique white"           { return value; }
+ / value: "linen"                   { return value; }
+ / value: "lavender blush"          { return value; }
+ / value: "misty rose"              { return value; }
+ / value: "gainsboro"               { return value; }
+ / value: "light grey"              { return value; }
+ / value: "silver"                  { return value; }
+ / value: "dark gray"               { return value; }
+ / value: "gray"                    { return value; }
+ / value: "dim gray"                { return value; }
+ / value: "light slate gray"        { return value; }
+ / value: "slate gray"              { return value; }
+ / value: "dark slate gray"         { return value; }
+ / value: "black"                   { return value; }
+ / value: "rebecca purple"          { return value; }
+ /                                  { return "black"; }
 
 size
- = value: "tiny"            { return { size: value, num: options.sizes[value] }; }
- / value: "small"           { return { size: value, num: options.sizes[value] }; }
- / value: "medium"          { return { size: value, num: options.sizes[value] }; }
- / value: "big"             { return { size: value, num: options.sizes[value] }; }
- / value: "large"           { return { size: value, num: options.sizes[value] }; }
- / value: "huge"            { return { size: value, num: options.sizes[value] }; }
- /                          { return { size: "default", num: 30 }; }
+ = value: "tiny"            { return value; }
+ / value: "small"           { return value; }
+ / value: "medium"          { return value; }
+ / value: "big"             { return value; }
+ / value: "large"           { return value; }
+ / value: "huge"            { return value; }
+ /                          { return "small"; }
 
 shape
-= value: "circle"          { return value; }
-/ value: "rectangle"       { return value; }
-/ value: "triangle"        { return value; }
-/ value: "spiral"          { return value; }
-/ value: "wavy line"       { return value; }
-/ value: "straight line"   { return value; }
-/ value: "zigzag line"     { return value; }
-/ value: "square"          { return value; }
-/ value: "oval"            { return value; }
-/ value: "dot"             { return value; }
-/ value: "point"           { return value; }
-/                          { return "square"; }
+ = value: "circle"          { return value; }
+ / value: "rectangle"       { return value; }
+ / value: "triangle"        { return value; }
+ / value: "spiral"          { return value; }
+ / value: "wavy line"       { return value; }
+ / value: "straight line"   { return value; }
+ / value: "zigzag line"     { return value; }
+ / value: "square"          { return value; }
+ / value: "oval"            { return value; }
+ / value: "dot"             { return value; }
+ / value: "point"           { return value; }
+ /                          { return "square"; }
+
+thickness
+ = value: "thick"           { return value; }
+ / value: "wide"            { return value; }
+ / value: "thin"            { return value; }
+ / value: "narrow"          { return value; }
+ /                          { return "default"; }
 
 count
  = value: integer           { return value }
